@@ -31,78 +31,80 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 70,
-        backgroundColor: Colors.green,
-        flexibleSpace: Container(
-          height: 50,
-          padding: EdgeInsets.only(left: 10),
-          margin: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: TextFormField(
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              icon: Icon(Icons.arrow_back),
-              hintText: "I am looking for...",
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 70,
+          backgroundColor: Colors.green,
+          flexibleSpace: Container(
+            height: 50,
+            padding: EdgeInsets.only(left: 10),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(6),
             ),
-            cursorColor: Colors.black,
-            cursorWidth: 1,
-            cursorHeight: 15,
+            child: TextFormField(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                icon: Icon(Icons.arrow_back),
+                hintText: "I am looking for...",
+              ),
+              cursorColor: Colors.black,
+              cursorWidth: 1,
+              cursorHeight: 15,
+            ),
           ),
         ),
-      ),
-      body: FutureBuilder(
-        future: productList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState ==
-              ConnectionState.done) {
-            if (snapshot.hasError) {
+        body: FutureBuilder(
+          future: productList,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState ==
+                ConnectionState.done) {
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text("Something went wrong"),
+                );
+              }
+              return MasonryGridView.count(
+                controller:
+                    scrollController, // Use the scrollController
+                padding: EdgeInsets.all(10),
+                itemCount: snapshot.data?.length,
+                shrinkWrap: true,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 14,
+                crossAxisCount:
+                    (MediaQuery.of(context).size.width / 180)
+                        .floor()
+                        .clamp(2, 6),
+                itemBuilder: (context, index) {
+                  final product = snapshot.data![index];
+                  double height = index % 2 == 0 ? 300 : 400;
+                  String price = NumberFormat.currency(
+                    locale: 'en_NG',
+                    symbol: '₦ ',
+                    decimalDigits:
+                        (product.price * 1600) % 1 == 0
+                            ? 0
+                            : 2,
+                  ).format(product.price * 1600);
+                  return ProductCard(
+                    height: height,
+                    product: product,
+                    price: price,
+                  );
+                },
+              );
+            } else {
               return const Center(
-                child: Text("Something went wrong"),
+                child: CircularProgressIndicator(
+                  color: Colors.green,
+                ),
               );
             }
-            return MasonryGridView.count(
-              controller:
-                  scrollController, // Use the scrollController
-              padding: EdgeInsets.all(10),
-              itemCount: snapshot.data?.length,
-              shrinkWrap: true,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 14,
-              crossAxisCount:
-                  (MediaQuery.of(context).size.width / 180)
-                      .floor()
-                      .clamp(2, 6),
-              itemBuilder: (context, index) {
-                final product = snapshot.data![index];
-                double height = index % 2 == 0 ? 300 : 400;
-                String price = NumberFormat.currency(
-                  locale: 'en_NG',
-                  symbol: '₦ ',
-                  decimalDigits:
-                      (product.price * 1600) % 1 == 0
-                          ? 0
-                          : 2,
-                ).format(product.price * 1600);
-                return ProductCard(
-                  height: height,
-                  product: product,
-                  price: price,
-                );
-              },
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.green,
-              ),
-            );
-          }
-        },
+          },
+        ),
       ),
     );
   }
