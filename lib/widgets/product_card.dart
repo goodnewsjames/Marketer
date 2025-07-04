@@ -19,7 +19,7 @@ class ProductCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: Colors.white10,
+          color: Colors.white,
           border: Border.all(width: 2, color: Colors.green),
         ),
         height: height < 300 ? 300 : height,
@@ -38,10 +38,12 @@ class ProductCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder:
                       (context, error, stackTrace) =>
-                          Container(
-                            height: 150,
-                            color: Colors.grey,
-                            child: Icon(Icons.error),
+                          Expanded(
+                            child: Container(
+                              height: 150,
+                              color: Colors.grey,
+                              child: Icon(Icons.error),
+                            ),
                           ),
                 ),
               ),
